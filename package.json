@@ -42,6 +42,7 @@
     "nanoid": "^5.1.6",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
+    "recharts": "2.15.4",
     "shiki": "^3.20.0",
     "streamdown": "^1.6.10",
     "tailwind-merge": "^3.4.0",
