@@ -12,9 +12,6 @@ import {
 } from "ai";
 import { env } from "cloudflare:workers";
 
-const openrouter = createOpenRouter({
-	apiKey: env.OPENROUTER_API_KEY,
-});
 
 const tools = {
 	documentSearch: documentSearchTool,
@@ -27,6 +24,10 @@ export const Route = createFileRoute("/api/chat")({
 		handlers: {
 			POST: async ({ request }) => {
 				const { messages }: { messages: UIMessage[] } = await request.json();
+
+				const openrouter = createOpenRouter({
+					apiKey: env.OPENROUTER_API_KEY,
+				});
 
 				const agent = new ToolLoopAgent({
 					model: openrouter("openai/gpt-5-nano"),
