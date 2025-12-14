@@ -4,7 +4,7 @@ import {
 	SourcesTrigger,
 } from "@/components/ai-elements/sources";
 import type { MyUIMessage } from "@/routes/api/chat";
-import { Streamdown } from "streamdown";
+import { Streamdown } from "@phaserjs/streamdown-lite";
 
 interface DocumentContent {
 	id: string;
