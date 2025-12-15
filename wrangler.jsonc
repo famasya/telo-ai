@@ -12,6 +12,13 @@
   "vars": {
     "OPENROUTER_API_KEY": "__OPENROUTER_API_KEY__",
   },
+  "kv_namespaces": [
+    {
+      "binding": "KV",
+      "id": "f8bc70b8951740a39ee24ca99324fc23",
+      "preview_id": "f8bc70b8951740a39ee24ca99324fc23"
+    }
+  ],
   "observability": {
     "enabled": false,
     "head_sampling_rate": 1,

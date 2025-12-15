@@ -1,11 +1,13 @@
 {
+  "permissions": {
+    "allow": [
+      "Bash(bun lint)",
+      "Bash(find:*)",
+      "Bash(bun run build:*)"
+    ]
+  },
   "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
     "context7"
-  ],
-  "permissions": {
-    "allow": [
-      "Bash(bun lint)"
-    ]
-  }
+  ]
 }
