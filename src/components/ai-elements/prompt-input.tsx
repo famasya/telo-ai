@@ -1047,7 +1047,7 @@ export const PromptInputSubmit = ({
       variant={variant}
       {...props}
     >
-      {children ?? Icon}
+      {Icon} Send
     </InputGroupButton>
   );
 };

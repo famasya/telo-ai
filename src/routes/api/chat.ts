@@ -1,46 +1,51 @@
 import { documentParse } from "@/lib/tools/document-parse";
 import { documentSearchTool } from "@/lib/tools/document-search";
 import {
-	clearHistory,
-	generateSummary,
-	processThought,
+  clearHistory,
+  generateSummary,
+  processThought,
 } from "@/lib/tools/sequential-thinking";
 import type { UIMessage } from "@ai-sdk/react";
 import { createOpenRouter } from "@openrouter/ai-sdk-provider";
 import { createFileRoute } from "@tanstack/react-router";
 import {
-	convertToModelMessages,
-	type InferUITools,
-	stepCountIs,
-	ToolLoopAgent,
-	type ToolSet,
-	type UIDataTypes,
+  convertToModelMessages,
+  type InferUITools,
+  stepCountIs,
+  ToolLoopAgent,
+  type ToolSet,
+  type UIDataTypes,
 } from "ai";
 import { env } from "cloudflare:workers";
 
 const tools = {
-	documentSearch: documentSearchTool,
-	processThought,
-	generateSummary,
-	clearHistory,
-	documentParse,
+  documentSearch: documentSearchTool,
+  processThought,
+  generateSummary,
+  clearHistory,
+  documentParse,
 } satisfies ToolSet;
 
 type ToolTypes = InferUITools<typeof tools>;
 export type MyUIMessage = UIMessage<unknown, UIDataTypes, ToolTypes>;
 
 const openrouter = createOpenRouter({
-	apiKey: env.OPENROUTER_API_KEY,
+  apiKey: env.OPENROUTER_API_KEY,
+  extraBody: {
+    provider: {
+      order: ["google-vertex", "clarifai/fp4"]
+    }
+  }
 });
 
 export const Route = createFileRoute("/api/chat")({
-	server: {
-		handlers: {
-			POST: async ({ request }) => {
-				const { messages }: { messages: UIMessage[] } = await request.json();
-				const agent = new ToolLoopAgent({
-					model: openrouter("openai/gpt-5-nano"),
-					instructions: `You are a legal document research agent for JDIH Kabupaten Trenggalek (Jaringan Dokumentasi dan Informasi Hukum).
+  server: {
+    handlers: {
+      POST: async ({ request }) => {
+        const { messages }: { messages: UIMessage[] } = await request.json();
+        const agent = new ToolLoopAgent({
+          model: openrouter("openai/gpt-oss-120b"),
+          instructions: `You are a legal document research agent for JDIH Kabupaten Trenggalek (Jaringan Dokumentasi dan Informasi Hukum).
 
 ## IMPORTANT: Document Scope and Context
 
@@ -148,6 +153,17 @@ For each sub-query, call documentSearch with the query string. This returns an A
 - data: Array of search results with filename, score, and content snippets
 - Each result has a 'filename' field (e.g., "document.pdf")
 
+**Search Attempt Limit:**
+- Track the number of documentSearch calls you make
+- If after **5-6 search attempts** you find:
+  - No results (empty data arrays)
+  - Only irrelevant results (low scores or unrelated content)
+  - Results that don't address the user's query
+- **STOP searching** and proceed to Step 6 to synthesize a response
+- In your synthesis, acknowledge what you searched for and explain that no relevant documents were found in the system
+- Provide helpful context about what types of documents ARE available (Perbup, Perda, SK Bupati from Trenggalek)
+- Suggest alternative search terms or clarifications the user might try
+
 ### Step 5: Parse Full Document Contents
 After gathering search results from documentSearch:
 1. Extract all unique filenames from the search results
@@ -173,7 +189,9 @@ After gathering search results from documentSearch:
 - Use the full parsed content (not just search snippets) to provide comprehensive answers
 
 ### Step 6: Synthesize Results
-After parsing all relevant documents:
+After parsing all relevant documents (OR after 5-6 unsuccessful search attempts):
+
+**If relevant documents were found:**
 1. Review the full document contents from documentParse responses
 2. Extract relevant information from each source
 3. Synthesize a comprehensive answer that:
@@ -184,6 +202,36 @@ After parsing all relevant documents:
    - Uses clear, professional Indonesian language appropriate for legal documents
    - References specific sections or points from the parsed documents
    - ALWAYS format your response using proper markdown with headers, bold text, lists, and blockquotes
+
+**If NO relevant documents were found (after 3-4 attempts):**
+1. Acknowledge the search attempts made
+2. Explain clearly that no relevant documents were found in the JDIH Kabupaten Trenggalek database
+3. Provide context about what you searched for
+4. Remind the user about the scope of available documents (Perbup, Perda, SK Bupati from Trenggalek only)
+5. Suggest possible reasons (document might not exist, different terminology, etc.)
+6. Recommend alternative search terms or ask for clarification
+7. ALWAYS format this response using proper markdown
+
+Example response structure for no results:
+
+"## Hasil Pencarian
+
+Saya telah melakukan **[X] pencarian** dengan berbagai variasi query terkait **[topic]**, namun tidak menemukan dokumen yang relevan dalam database JDIH Kabupaten Trenggalek.
+
+### Yang Telah Dicari:
+- [List of search queries attempted]
+
+### Kemungkinan Penyebab:
+- Dokumen yang Anda cari mungkin belum tersedia dalam sistem
+- Istilah atau nomor peraturan yang dicari mungkin berbeda
+- Dokumen tersebut mungkin belum diterbitkan atau tidak termasuk dalam database lokal
+
+### Saran:
+- Coba gunakan istilah pencarian yang berbeda
+- Pastikan nomor atau tahun peraturan sudah benar
+- Jika Anda mencari dokumen tertentu, berikan informasi lebih detail seperti nomor, tahun, atau topik spesifik
+
+**Catatan:** Database ini hanya berisi dokumen pemerintah lokal Kabupaten Trenggalek (Perbup, Perda, SK Bupati, dll)."
 
 ### Step 7: Markdown Formatting Requirements
 
@@ -214,16 +262,16 @@ If you used sequential thinking, call clearHistory to prepare for the next query
 - **Be precise**: Always cite specific document numbers and titles (e.g., "Keputusan Bupati Trenggalek Nomor X Tahun Y")
 - **Be professional**: Use proper local government legal terminology and formal Indonesian language
 - **When in doubt**: Default to local government document types (Keputusan/Peraturan Bupati, Perda, SK Bupati)`,
-					tools,
-					stopWhen: stepCountIs(15),
-				});
+          tools,
+          stopWhen: stepCountIs(10),
+        });
 
-				const result = await agent.stream({
-					messages: convertToModelMessages(messages),
-				});
+        const result = await agent.stream({
+          messages: convertToModelMessages(messages),
+        });
 
-				return result.toUIMessageStreamResponse();
-			},
-		},
-	},
+        return result.toUIMessageStreamResponse();
+      },
+    },
+  },
 });
