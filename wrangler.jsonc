@@ -12,10 +12,19 @@
   "vars": {
     "OPENROUTER_API_KEY": "__OPENROUTER_API_KEY__",
   },
+  "r2_buckets": [
+    {
+      "binding": "r2",
+      "bucket_name": "tgxai",
+      "remote": true,
+      "preview_bucket_name": "tgxai"
+    }
+  ],
   "kv_namespaces": [
     {
       "binding": "kv",
       "id": "f8bc70b8951740a39ee24ca99324fc23",
+      "remote": true,
       "preview_id": "f8bc70b8951740a39ee24ca99324fc23"
     }
   ],

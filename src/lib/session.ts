@@ -15,7 +15,6 @@ export const saveSession = createServerFn()
     const { id, messages } = data;
 
     // if no id is provided, generate a new one
-
     const sessionId = id ?? uuidv7();
     await env.kv.put(`session:${sessionId}`, JSON.stringify(messages));
 
