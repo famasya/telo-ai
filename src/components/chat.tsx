@@ -10,10 +10,8 @@ import { ChatMessages } from "@/components/chat-messages";
 import { DocumentSources } from "@/components/document-sources";
 import type { MyUIMessage } from "@/routes/api/chat";
 import { useChat } from "@ai-sdk/react";
-import { Save } from "lucide-react";
 import { type FormEvent, useState } from "react";
 import { Suggestion, Suggestions } from "./ai-elements/suggestion";
-import { Button } from "./ui/button";
 
 export default function Chat() {
 	const [input, setInput] = useState("");
@@ -73,7 +71,6 @@ export default function Chat() {
 						</PromptInputBody>
 						<PromptInputFooter>
 							<PromptInputSubmit disabled={!input && !status} status={status} />
-							<Button size="sm" disabled={messages.length === 0}><Save /> Simpan</Button>
 						</PromptInputFooter>
 					</PromptInput>
 				</div>
