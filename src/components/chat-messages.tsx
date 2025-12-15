@@ -84,6 +84,9 @@ export function ChatMessages({
 								case "tool-documentSearch":
 									// Tool calls are displayed in the DocumentSources component
 									return null;
+								case "tool-documentRelationGraph":
+									// Tool calls are displayed in the DocumentSources component
+									return null;
 								default:
 									return null;
 							}

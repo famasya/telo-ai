@@ -3,7 +3,12 @@
     "allow": [
       "Bash(bun lint)",
       "Bash(find:*)",
-      "Bash(bun run build:*)"
+      "Bash(bun run build:*)",
+      "Bash(cat:*)",
+      "Bash(ls:*)",
+      "Bash(bun run build:client:*)",
+      "Bash(tsc:*)",
+      "Bash(bunx tsc:*)"
     ]
   },
   "enableAllProjectMcpServers": true,

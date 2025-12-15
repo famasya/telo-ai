@@ -97,7 +97,11 @@ export default function Chat() {
 							/>
 						</PromptInputBody>
 						<PromptInputFooter className="flex justify-end">
-							<PromptInputSubmit size={"sm"} disabled={!input && !status} status={status} />
+							<PromptInputSubmit
+								size={"sm"}
+								disabled={!input && !status}
+								status={status}
+							/>
 						</PromptInputFooter>
 					</PromptInput>
 				</div>

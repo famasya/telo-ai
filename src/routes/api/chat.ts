@@ -1,4 +1,5 @@
 import { documentParse } from "@/lib/tools/document-parse";
+import { documentRelationGraph } from "@/lib/tools/document-relation-graph";
 import { documentSearchTool } from "@/lib/tools/document-search";
 import {
   clearHistory,
@@ -24,6 +25,7 @@ const tools = {
   generateSummary,
   clearHistory,
   documentParse,
+  documentRelationGraph,
 } satisfies ToolSet;
 
 type ToolTypes = InferUITools<typeof tools>;
@@ -33,9 +35,9 @@ const openrouter = createOpenRouter({
   apiKey: env.OPENROUTER_API_KEY,
   extraBody: {
     provider: {
-      order: ["google-vertex", "clarifai/fp4"]
-    }
-  }
+      order: ["google-vertex", "clarifai/fp4"],
+    },
+  },
 });
 
 export const Route = createFileRoute("/api/chat")({
@@ -155,7 +157,7 @@ For each sub-query, call documentSearch with the query string. This returns an A
 
 **Search Attempt Limit:**
 - Track the number of documentSearch calls you make
-- If after **5-6 search attempts** you find:
+- If after **2-3 search attempts** you find:
   - No results (empty data arrays)
   - Only irrelevant results (low scores or unrelated content)
   - Results that don't address the user's query
@@ -189,7 +191,7 @@ After gathering search results from documentSearch:
 - Use the full parsed content (not just search snippets) to provide comprehensive answers
 
 ### Step 6: Synthesize Results
-After parsing all relevant documents (OR after 5-6 unsuccessful search attempts):
+After parsing all relevant documents (OR after 2-3 unsuccessful search attempts):
 
 **If relevant documents were found:**
 1. Review the full document contents from documentParse responses

@@ -6,7 +6,7 @@ import { NotFound } from "./components/not-found";
 import { routeTree } from "./routeTree.gen";
 
 export function getRouter() {
-	const queryClient = new QueryClient()
+	const queryClient = new QueryClient();
 
 	const router = createRouter({
 		routeTree,
@@ -20,7 +20,7 @@ export function getRouter() {
 	setupRouterSsrQueryIntegration({
 		router,
 		queryClient,
-	})
+	});
 
-	return router
+	return router;
 }

@@ -3,6 +3,7 @@ import {
 	SourcesContent,
 	SourcesTrigger,
 } from "@/components/ai-elements/sources";
+import { DocumentRelationGraphRenderer } from "@/components/document-relation-graph-renderer";
 import type { MyUIMessage } from "@/routes/api/chat";
 import { Streamdown } from "@phaserjs/streamdown-lite";
 import { ExternalLink } from "lucide-react";
@@ -27,7 +28,23 @@ export function DocumentSources({ messages }: DocumentSourcesProps) {
 				})),
 		);
 
-	if (documentSearchResults.length === 0) {
+	// Extract all document relation graph results from messages
+	const documentGraphResults = messages
+		.filter((message) => message.role === "assistant")
+		.flatMap((message) =>
+			message.parts
+				.filter(
+					(part) =>
+						part.type === "tool-documentRelationGraph" &&
+						part.state === "output-available",
+				)
+				.map((part) => ({
+					messageId: message.id,
+					part,
+				})),
+		);
+
+	if (documentSearchResults.length === 0 && documentGraphResults.length === 0) {
 		return (
 			<div className="h-full flex items-center justify-center text-zinc-400">
 				<p className="text-sm">No document sources available</p>
@@ -77,6 +94,11 @@ export function DocumentSources({ messages }: DocumentSourcesProps) {
 							</SourcesContent>
 						))}
 					</Sources>
+				</div>
+			))}
+			{documentGraphResults.map(({ messageId, part }, index) => (
+				<div key={`graph-${messageId}-${index.toString()}`}>
+					<DocumentRelationGraphRenderer part={part} />
 				</div>
 			))}
 		</div>
