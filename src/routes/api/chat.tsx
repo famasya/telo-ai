@@ -1,5 +1,10 @@
+import { documentParse } from "@/lib/tools/document-parse";
 import { documentSearchTool } from "@/lib/tools/document-search";
-import { clearHistory, generateSummary, processThought } from "@/lib/tools/sequential-thinking";
+import {
+	clearHistory,
+	generateSummary,
+	processThought,
+} from "@/lib/tools/sequential-thinking";
 import type { UIMessage } from "@ai-sdk/react";
 import { createOpenRouter } from "@openrouter/ai-sdk-provider";
 import { createFileRoute } from "@tanstack/react-router";
@@ -13,12 +18,12 @@ import {
 } from "ai";
 import { env } from "cloudflare:workers";
 
-
 const tools = {
 	documentSearch: documentSearchTool,
 	processThought,
 	generateSummary,
 	clearHistory,
+	documentParse,
 } satisfies ToolSet;
 
 type ToolTypes = InferUITools<typeof tools>;
@@ -139,20 +144,52 @@ Example 2: "bandingkan perda tentang pajak daerah dengan peraturan sebelumnya"
 - Never search for court rulings (putusan pengadilan) - you don't have access to those
 
 ### Step 4: Search Documents
-For each sub-query, call documentSearch with the query string.
+For each sub-query, call documentSearch with the query string. This returns an AutoRagSearchResponse containing:
+- data: Array of search results with filename, score, and content snippets
+- Each result has a 'filename' field (e.g., "document.pdf")
 
-### Step 5: Synthesize Results
-After all searches complete:
-1. Review all retrieved documents carefully
+### Step 5: Parse Full Document Contents
+For each unique filename returned from documentSearch:
+1. Extract the filename
+2. Call documentParse with the filename to get the full page contents
+3. The documentParse tool will return the complete document content analyzed by the model
+
+**Important:**
+- Only parse documents that are relevant to answering the query
+- Deduplicate filenames if the same document appears in multiple search results
+- Use the full parsed content (not just search snippets) to provide comprehensive answers
+
+### Step 6: Synthesize Results
+After parsing all relevant documents:
+1. Review the full document contents from documentParse responses
 2. Extract relevant information from each source
 3. Synthesize a comprehensive answer that:
-   - Directly addresses the user's question
+   - Directly addresses the user's question based on FULL document contents
    - Cites specific documents when relevant (include document names and numbers)
    - Provides legal context and connections between findings
    - For comparisons, clearly highlight differences and similarities
    - Uses clear, professional Indonesian language appropriate for legal documents
+   - References specific sections or points from the parsed documents
+   - ALWAYS format your response using proper markdown with headers, bold text, lists, and blockquotes
 
-### Step 6: Cleanup
+### Step 7: Markdown Formatting Requirements
+
+CRITICAL: Your final answer MUST use proper markdown formatting:
+
+1. Use headers (## for main title, ### for sections) to organize your response
+2. Bold important items: document names, numbers, and key terms
+3. Use bullet points (-) or numbered lists (1., 2., 3.) for clarity
+4. Use blockquotes (>) for direct quotes from documents
+5. Keep paragraphs concise with line breaks between sections
+
+Example structure:
+- Start with ## followed by the main topic
+- Use ### for subsections like "Ringkasan", "Ketentuan Utama", "Detail Lengkap", "Kesimpulan"
+- Bold all document references
+- Use lists to break down information
+- Add blockquotes for direct citations
+
+### Step 8: Cleanup
 If you used sequential thinking, call clearHistory to prepare for the next query.
 
 ## Important Notes

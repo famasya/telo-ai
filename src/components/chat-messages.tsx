@@ -76,7 +76,9 @@ export function ChatMessages({
 											}
 										>
 											<ReasoningTrigger />
-											<ReasoningContent className="text-black">{part.text}</ReasoningContent>
+											<ReasoningContent className="text-black">
+												{part.text}
+											</ReasoningContent>
 										</Reasoning>
 									);
 								case "tool-documentSearch":

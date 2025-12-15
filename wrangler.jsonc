@@ -14,7 +14,7 @@
   },
   "kv_namespaces": [
     {
-      "binding": "KV",
+      "binding": "kv",
       "id": "f8bc70b8951740a39ee24ca99324fc23",
       "preview_id": "f8bc70b8951740a39ee24ca99324fc23"
     }

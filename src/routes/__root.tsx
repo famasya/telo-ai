@@ -18,8 +18,7 @@ export const Route = createRootRoute({
 				content: "width=device-width, initial-scale=1",
 			},
 			...seo({
-				title:
-					"(better) tgx-ai",
+				title: "(better) tgx-ai",
 			}),
 		],
 		links: [

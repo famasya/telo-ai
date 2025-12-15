@@ -10,14 +10,24 @@ import { ChatMessages } from "@/components/chat-messages";
 import { DocumentSources } from "@/components/document-sources";
 import type { MyUIMessage } from "@/routes/api/chat";
 import { useChat } from "@ai-sdk/react";
-import { useState } from "react";
+import { type FormEvent, useState } from "react";
 import { Suggestion, Suggestions } from "./ai-elements/suggestion";
 
 export default function Chat() {
 	const [input, setInput] = useState("");
-	const { messages, sendMessage, status, regenerate } = useChat<MyUIMessage>();
+	const { messages, sendMessage, status, regenerate, stop } =
+		useChat<MyUIMessage>();
 
-	const handleSubmit = (message: PromptInputMessage) => {
+	const handleSubmit = (
+		message: PromptInputMessage,
+		event: FormEvent<HTMLFormElement>,
+	) => {
+		event.preventDefault();
+
+		if (status === "streaming" || status === "submitted") {
+			return stop();
+		}
+
 		if (!message.text) {
 			return;
 		}
