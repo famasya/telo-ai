@@ -36,9 +36,9 @@ export default function Chat() {
 		setInput("");
 	};
 	const [suggestionsCache, _setSuggestionsCache] = useState<string[]>([
+		"Carikan perda apa saja tentang lingkungan hidup",
 		"Ada berapa hibah kendaraan bermotor?",
-		"Jelaskan peraturan bupati tentang RSUD",
-		"Beritahu tentang badan ekonomi kreatif di trenggalek?",
+		"Carikan perda tentang pengadaan barang/jasa",
 	]);
 
 	return (
