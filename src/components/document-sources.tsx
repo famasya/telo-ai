@@ -5,6 +5,7 @@ import {
 } from "@/components/ai-elements/sources";
 import type { MyUIMessage } from "@/routes/api/chat";
 import { Streamdown } from "@phaserjs/streamdown-lite";
+import { ExternalLink } from "lucide-react";
 
 interface DocumentContent {
 	id: string;
@@ -61,7 +62,7 @@ export function DocumentSources({ messages }: DocumentSourcesProps) {
 						<SourcesTrigger count={part.output?.data?.length || 0} />
 						{part.output?.data?.map((result: DocumentResult) => (
 							<SourcesContent key={result.file_id}>
-								<div className="p-4 bg-zinc-50 rounded-lg space-y-3">
+								<div className="p-4 bg-blue-100 border border-blue-200 rounded-lg space-y-3">
 									<div className="text-sm">
 										<strong className="font-medium">Query:</strong>
 										<span className="ml-2 text-zinc-700">
@@ -69,9 +70,12 @@ export function DocumentSources({ messages }: DocumentSourcesProps) {
 										</span>
 									</div>
 
-									<div className="border-t pt-3">
-										<div className="font-medium text-sm mb-3">
-											{result.filename}
+									<div className="border-t border-blue-200 pt-3">
+										<div className="flex flex-row items-center font-medium text-sm mb-3">
+											<ExternalLink className="mr-1 w-4 h-4 shrink-0" />
+											<a className="text-blue-500 hover:text-blue-700" href={`https://pub-63bdfa87604344f9aa7ec047b658f98f.r2.dev/${result.filename}`} target="_blank">
+												{result.filename}
+											</a>
 										</div>
 										<div className="space-y-3">
 											{result.content?.map((content: DocumentContent) => (

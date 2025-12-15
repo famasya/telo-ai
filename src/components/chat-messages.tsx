@@ -68,7 +68,7 @@ export function ChatMessages({
 									return (
 										<Reasoning
 											key={`${message.id}-${i}`}
-											className="w-full"
+											className="w-full bg-gradient-to-b from-blue-50 to-blue-100 p-2 rounded-lg border border-blue-200"
 											isStreaming={
 												status === "streaming" &&
 												i === message.parts.length - 1 &&
@@ -76,7 +76,7 @@ export function ChatMessages({
 											}
 										>
 											<ReasoningTrigger />
-											<ReasoningContent>{part.text}</ReasoningContent>
+											<ReasoningContent className="text-black">{part.text}</ReasoningContent>
 										</Reasoning>
 									);
 								case "tool-documentSearch":

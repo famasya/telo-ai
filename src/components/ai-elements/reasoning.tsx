@@ -6,7 +6,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Streamdown } from "@phaserjs/streamdown-lite";
 import { useControllableState } from "@radix-ui/react-use-controllable-state";
-import { BrainIcon, ChevronDownIcon } from "lucide-react";
+import { ChevronDownIcon, SparkleIcon } from "lucide-react";
 import type { ComponentProps, ReactNode } from "react";
 import { createContext, memo, useContext, useEffect, useState } from "react";
 import { Shimmer } from "./shimmer";
@@ -137,7 +137,7 @@ export const ReasoningTrigger = memo(
       >
         {children ?? (
           <>
-            <BrainIcon className="size-4" />
+            <SparkleIcon className="size-4" />
             {getThinkingMessage(isStreaming, duration)}
             <ChevronDownIcon
               className={cn(
