@@ -2,51 +2,51 @@ import { documentParse } from "@/lib/tools/document-parse";
 import { documentRelationGraph } from "@/lib/tools/document-relation-graph";
 import { documentSearchTool } from "@/lib/tools/document-search";
 import {
-  clearHistory,
-  generateSummary,
-  processThought,
+	clearHistory,
+	generateSummary,
+	processThought,
 } from "@/lib/tools/sequential-thinking";
 import type { UIMessage } from "@ai-sdk/react";
 import { createOpenRouter } from "@openrouter/ai-sdk-provider";
 import { createFileRoute } from "@tanstack/react-router";
 import {
-  convertToModelMessages,
-  type InferUITools,
-  ToolLoopAgent,
-  type ToolSet,
-  type UIDataTypes,
+	convertToModelMessages,
+	type InferUITools,
+	ToolLoopAgent,
+	type ToolSet,
+	type UIDataTypes,
 } from "ai";
 import { env } from "cloudflare:workers";
 
 const tools = {
-  documentSearch: documentSearchTool,
-  processThought,
-  generateSummary,
-  clearHistory,
-  documentParse,
-  documentRelationGraph,
+	documentSearch: documentSearchTool,
+	processThought,
+	generateSummary,
+	clearHistory,
+	documentParse,
+	documentRelationGraph,
 } satisfies ToolSet;
 
 type ToolTypes = InferUITools<typeof tools>;
 export type MyUIMessage = UIMessage<unknown, UIDataTypes, ToolTypes>;
 
 const openrouter = createOpenRouter({
-  apiKey: env.OPENROUTER_API_KEY,
-  extraBody: {
-    provider: {
-      order: ["google-vertex", "clarifai/fp4"],
-    },
-  },
+	apiKey: env.OPENROUTER_API_KEY,
+	extraBody: {
+		provider: {
+			order: ["google-vertex", "clarifai/fp4"],
+		},
+	},
 });
 
 export const Route = createFileRoute("/api/chat")({
-  server: {
-    handlers: {
-      POST: async ({ request }) => {
-        const { messages }: { messages: UIMessage[] } = await request.json();
-        const agent = new ToolLoopAgent({
-          model: openrouter("openai/gpt-oss-120b"),
-          instructions: `You are a legal document research agent for JDIH Kabupaten Trenggalek (Jaringan Dokumentasi dan Informasi Hukum).
+	server: {
+		handlers: {
+			POST: async ({ request }) => {
+				const { messages }: { messages: UIMessage[] } = await request.json();
+				const agent = new ToolLoopAgent({
+					model: openrouter("openai/gpt-oss-120b"),
+					instructions: `You are a legal document research agent for JDIH Kabupaten Trenggalek (Jaringan Dokumentasi dan Informasi Hukum).
 
 ## CRITICAL: Efficiency Guidelines
 
@@ -261,34 +261,35 @@ If you used processThought (rare), call clearHistory to prepare for the next que
 - **Be precise**: Always cite specific document numbers and titles (e.g., "Keputusan Bupati Trenggalek Nomor X Tahun Y")
 - **Be professional**: Use proper local government legal terminology and formal Indonesian language
 - **When in doubt**: Default to local government document types (Keputusan/Peraturan Bupati, Perda, SK Bupati)`,
-          tools,
-          stopWhen: (state) => {
-            const stepCount = state.steps.length;
+					tools,
+					stopWhen: (state) => {
+						const stepCount = state.steps.length;
 
-            // Always stop after 10 steps as a safety limit
-            if (stepCount >= 10) return true;
+						// Always stop after 10 steps as a safety limit
+						if (stepCount >= 10) return true;
 
-            // Check if we have at least 3 steps (minimum for a complete flow)
-            if (stepCount < 3) return false;
+						// Check if we have at least 3 steps (minimum for a complete flow)
+						if (stepCount < 3) return false;
 
-            const lastStep = state.steps.at(-1);
-            if (!lastStep) return false;
+						const lastStep = state.steps.at(-1);
+						if (!lastStep) return false;
 
-            // Stop if the last step has substantial text response and no tool calls
-            // This indicates the agent has finished processing and provided a final answer
-            const hasSubstantialText = (lastStep.text?.length ?? 0) > 200;
-            const hasNoToolCalls = !lastStep.toolCalls || lastStep.toolCalls.length === 0;
+						// Stop if the last step has substantial text response and no tool calls
+						// This indicates the agent has finished processing and provided a final answer
+						const hasSubstantialText = (lastStep.text?.length ?? 0) > 200;
+						const hasNoToolCalls =
+							!lastStep.toolCalls || lastStep.toolCalls.length === 0;
 
-            return hasSubstantialText && hasNoToolCalls;
-          },
-        });
+						return hasSubstantialText && hasNoToolCalls;
+					},
+				});
 
-        const result = await agent.stream({
-          messages: convertToModelMessages(messages),
-        });
+				const result = await agent.stream({
+					messages: convertToModelMessages(messages),
+				});
 
-        return result.toUIMessageStreamResponse();
-      },
-    },
-  },
+				return result.toUIMessageStreamResponse();
+			},
+		},
+	},
 });
