@@ -4,7 +4,8 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { cn } from "@/lib/utils";
-import { BookIcon, ChevronDownIcon } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Book02Icon, ArrowDown01Icon } from "@hugeicons/core-free-icons";
 import type { ComponentProps } from "react";
 
 export type SourcesProps = ComponentProps<"div">;
@@ -33,7 +34,7 @@ export const SourcesTrigger = ({
     {children ?? (
       <>
         <p className="font-medium">Used {count} sources</p>
-        <ChevronDownIcon className="h-4 w-4" />
+        <HugeiconsIcon icon={ArrowDown01Icon} size={16} />
       </>
     )}
   </CollapsibleTrigger>
@@ -67,7 +68,7 @@ export const Source = ({ href, title, children, ...props }: SourceProps) => (
   >
     {children ?? (
       <>
-        <BookIcon className="h-4 w-4" />
+        <HugeiconsIcon icon={Book02Icon} size={16} />
         <span className="block font-medium">{title}</span>
       </>
     )}

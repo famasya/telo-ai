@@ -3,6 +3,13 @@
     "context7": {
       "type": "http",
       "url": "https://mcp.context7.com/mcp"
+    },
+    "hugeicons": {
+      "command": "bun",
+      "args": [
+        "x",
+        "@hugeicons/mcp-server"
+      ]
     }
   }
 }

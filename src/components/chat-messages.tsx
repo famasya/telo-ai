@@ -17,14 +17,15 @@ import {
 	ReasoningTrigger,
 } from "@/components/ai-elements/reasoning";
 import type { MyUIMessage } from "@/routes/api/chat";
-import type { ChatRequestOptions, ChatStatus } from "ai";
 import {
-	CopyIcon,
+	AiNetworkIcon,
+	Copy01Icon,
 	FileSearchIcon,
-	NetworkIcon,
-	RefreshCcwIcon,
-	SearchIcon,
-} from "lucide-react";
+	RefreshIcon,
+	Search01Icon,
+} from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
+import type { ChatRequestOptions, ChatStatus } from "ai";
 
 interface ChatMessagesProps {
 	messages: MyUIMessage[];
@@ -44,13 +45,13 @@ function ToolCallDisplay({
 	const getToolIcon = () => {
 		switch (toolName) {
 			case "documentSearch":
-				return <SearchIcon className="size-4" />;
+				return <HugeiconsIcon icon={Search01Icon} size={16} />;
 			case "documentContentSearchTool":
-				return <FileSearchIcon className="size-4" />;
+				return <HugeiconsIcon icon={FileSearchIcon} size={16} />;
 			case "documentRelationGraph":
-				return <NetworkIcon className="size-4" />;
+				return <HugeiconsIcon icon={AiNetworkIcon} size={16} />;
 			default:
-				return <SearchIcon className="size-4" />;
+				return <HugeiconsIcon icon={Search01Icon} size={16} />;
 		}
 	};
 
@@ -159,7 +160,7 @@ export function ChatMessages({
 														onClick={() => regenerate()}
 														label="Retry"
 													>
-														<RefreshCcwIcon className="size-3" />
+														<HugeiconsIcon icon={RefreshIcon} size={12} stroke="2" />
 													</MessageAction>
 													<MessageAction
 														onClick={() =>
@@ -167,7 +168,7 @@ export function ChatMessages({
 														}
 														label="Copy"
 													>
-														<CopyIcon className="size-3" />
+														<HugeiconsIcon icon={Copy01Icon} size={12} />
 													</MessageAction>
 												</MessageActions>
 											)}
@@ -177,7 +178,6 @@ export function ChatMessages({
 									return (
 										<Reasoning
 											key={`${message.id}-${i}`}
-											className="w-full bg-gradient-to-b from-blue-50 to-blue-100 p-2 rounded-lg border border-blue-200"
 											defaultOpen={false}
 											isStreaming={
 												status === "streaming" &&
@@ -186,7 +186,7 @@ export function ChatMessages({
 											}
 										>
 											<ReasoningTrigger />
-											<ReasoningContent className="text-black data-[state=closed]:animate-none data-[state=open]:animate-none">
+											<ReasoningContent className="data-[state=closed]:animate-none data-[state=open]:animate-none bg-sky-100 text-sky-900 p-2 rounded-md">
 												{part.text}
 											</ReasoningContent>
 										</Reasoning>

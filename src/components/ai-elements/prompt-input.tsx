@@ -33,17 +33,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import type { ChatStatus, FileUIPart } from "ai";
 import {
-  CornerDownLeftIcon,
-  ImageIcon,
-  Loader2Icon,
-  MicIcon,
-  PaperclipIcon,
-  PlusIcon,
-  SquareIcon,
-  XIcon,
-} from "lucide-react";
+  Add01Icon,
+  Attachment01Icon,
+  Cancel01Icon,
+  Image01Icon,
+  Loading03Icon,
+  Mic01Icon,
+  SentIcon,
+  SquareIcon
+} from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
+import type { ChatStatus, FileUIPart } from "ai";
 import { nanoid } from "nanoid";
 import {
   type ChangeEvent,
@@ -317,7 +318,7 @@ export function PromptInputAttachment({
                 />
               ) : (
                 <div className="flex size-5 items-center justify-center text-muted-foreground">
-                  <PaperclipIcon className="size-3" />
+                  <HugeiconsIcon icon={Attachment01Icon} size={12} />
                 </div>
               )}
             </div>
@@ -331,7 +332,7 @@ export function PromptInputAttachment({
               type="button"
               variant="ghost"
             >
-              <XIcon />
+              <HugeiconsIcon icon={Cancel01Icon} size={10} />
               <span className="sr-only">Remove</span>
             </Button>
           </div>
@@ -420,7 +421,7 @@ export const PromptInputActionAddAttachments = ({
         attachments.openFileDialog();
       }}
     >
-      <ImageIcon className="mr-2 size-4" /> {label}
+      <HugeiconsIcon icon={Image01Icon} className="mr-2" size={16} /> {label}
     </DropdownMenuItem>
   );
 };
@@ -787,7 +788,7 @@ export const PromptInput = ({
         ref={formRef}
         {...props}
       >
-        <InputGroup className="overflow-hidden">{children}</InputGroup>
+        <InputGroup className="overflow-hidden rounded-2xl shadow-lg">{children}</InputGroup>
       </form>
     </>
   );
@@ -988,7 +989,7 @@ export const PromptInputActionMenuTrigger = ({
 }: PromptInputActionMenuTriggerProps) => (
   <DropdownMenuTrigger asChild>
     <PromptInputButton className={className} {...props}>
-      {children ?? <PlusIcon className="size-4" />}
+      {children ?? <HugeiconsIcon icon={Add01Icon} size={16} />}
     </PromptInputButton>
   </DropdownMenuTrigger>
 );
@@ -1028,14 +1029,14 @@ export const PromptInputSubmit = ({
   children,
   ...props
 }: PromptInputSubmitProps) => {
-  let Icon = <CornerDownLeftIcon className="size-4" />;
+  let Icon = <HugeiconsIcon icon={SentIcon} size={16} />;
 
   if (status === "submitted") {
-    Icon = <Loader2Icon className="size-4 animate-spin" />;
+    Icon = <HugeiconsIcon icon={Loading03Icon} className="animate-spin" size={16} />;
   } else if (status === "streaming") {
-    Icon = <SquareIcon className="size-4" />;
+    Icon = <HugeiconsIcon icon={SquareIcon} size={16} />;
   } else if (status === "error") {
-    Icon = <XIcon className="size-4" />;
+    Icon = <HugeiconsIcon icon={Cancel01Icon} size={16} />;
   }
 
   return (
@@ -1044,10 +1045,11 @@ export const PromptInputSubmit = ({
       className={cn(className)}
       size={size}
       type="submit"
+      disabled={status === "submitted"}
       variant={variant}
       {...props}
     >
-      {Icon} Send
+      {Icon} Kirim
     </InputGroupButton>
   );
 };
@@ -1207,7 +1209,7 @@ export const PromptInputSpeechButton = ({
       onClick={toggleListening}
       {...props}
     >
-      <MicIcon className="size-4" />
+      <HugeiconsIcon icon={Mic01Icon} size={16} />
     </PromptInputButton>
   );
 };

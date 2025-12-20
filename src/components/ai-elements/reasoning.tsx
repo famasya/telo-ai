@@ -4,9 +4,10 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { cn } from "@/lib/utils";
+import { AiIdeaIcon, ArrowDown01Icon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 import { Streamdown } from "@phaserjs/streamdown-lite";
 import { useControllableState } from "@radix-ui/react-use-controllable-state";
-import { ChevronDownIcon, SparkleIcon } from "lucide-react";
 import type { ComponentProps, ReactNode } from "react";
 import { createContext, memo, useContext, useEffect, useState } from "react";
 import { Shimmer } from "./shimmer";
@@ -137,13 +138,15 @@ export const ReasoningTrigger = memo(
       >
         {children ?? (
           <>
-            <SparkleIcon className="size-4" />
+            <HugeiconsIcon icon={AiIdeaIcon} strokeWidth={2} size={16} />
             {getThinkingMessage(isStreaming, duration)}
-            <ChevronDownIcon
+            <HugeiconsIcon
+              icon={ArrowDown01Icon}
               className={cn(
-                "size-4 transition-transform",
+                "transition-transform",
                 isOpen ? "rotate-180" : "rotate-0"
               )}
+              size={16}
             />
           </>
         )}

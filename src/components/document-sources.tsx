@@ -7,7 +7,8 @@ import { DocumentRelationGraphRenderer } from "@/components/document-relation-gr
 import { BUCKET_DOMAIN } from "@/lib/constants";
 import type { MyUIMessage } from "@/routes/api/chat";
 import { Streamdown } from "@phaserjs/streamdown-lite";
-import { ExternalLink } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Link01Icon } from "@hugeicons/core-free-icons";
 interface DocumentSourcesProps {
 	messages: MyUIMessage[];
 }
@@ -71,7 +72,11 @@ export function DocumentSources({ messages }: DocumentSourcesProps) {
 
 									<div className="border-t border-blue-200 pt-3">
 										<div className="flex flex-row items-center font-medium text-sm mb-3">
-											<ExternalLink className="mr-1 w-4 h-4 shrink-0" />
+											<HugeiconsIcon
+												icon={Link01Icon}
+												className="mr-1 shrink-0"
+												size={16}
+											/>
 											<a
 												className="text-blue-500 hover:text-blue-700"
 												href={`${BUCKET_DOMAIN}/${result.filename}`}
