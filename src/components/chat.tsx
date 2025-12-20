@@ -37,7 +37,7 @@ export default function Chat() {
 	};
 
 	const [suggestionsCache, _setSuggestionsCache] = useState<string[]>([
-		"Carikan perda apa saja tentang lingkungan hidup",
+		"Carikan peraturan apa saja tentang lingkungan hidup",
 		"Ada berapa hibah kendaraan bermotor?",
 		"Carikan perda tentang pengadaan barang/jasa",
 	]);
@@ -59,7 +59,7 @@ export default function Chat() {
 			</div>
 
 			{/* Messages Area */}
-			<div className="flex-1 overflow-hidden max-w-4xl mx-auto">
+			<div className="flex-1 w-full overflow-hidden max-w-4xl mx-auto">
 				<ChatMessages
 					messages={messages}
 					status={status}
@@ -67,18 +67,27 @@ export default function Chat() {
 				/>
 			</div>
 
-			<div className="max-w-4xl mx-auto">
-				<h3 className="text-sm font-medium text-zinc-700">Saran pertanyaan</h3>
-				<div className="grid grid-cols-3 gap-2">
+			<div className="max-w-4xl mx-auto px-4 pb-4">
+				<h3 className="text-sm font-semibold text-zinc-800 mb-3 flex items-center gap-2">
+					<span className="w-1 h-4 bg-gradient-to-b from-purple-500 to-purple-600 rounded-full" />
+					COBA PERTANYAAN INI
+				</h3>
+				<div className="grid grid-cols-1 md:grid-cols-3 gap-3">
 					{suggestionsCache.map((suggestion, index) => (
 						<button
 							key={index.toString()}
 							type="button"
 							onClick={() => setInput(suggestion)}
-							className="text-sm bg-purple-100 hover:bg-purple-200 text-purple-900 px-3 py-2 rounded-lg transition-colors whitespace-normal break-words"
+							className="group relative text-sm bg-gradient-to-br from-purple-50 to-purple-100/50 hover:from-purple-100 hover:to-purple-200/80 text-purple-900 px-4 py-3.5 rounded-xl transition-all duration-200 hover:shadow-xs border border-purple-200/50 hover:border-purple-300 
+							focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-400 focus-visible:ring-offset-2 whitespace-normal break-words text-left"
 						>
-							{suggestion}
-							<HugeiconsIcon icon={Quote} />
+							<div className="flex items-start justify-between gap-2">
+								<span className="leading-relaxed">{suggestion}</span>
+								<HugeiconsIcon
+									icon={Quote}
+									className="flex-shrink-0 w-4 h-4 text-purple-400 group-hover:text-purple-600 transition-colors"
+								/>
+							</div>
 						</button>
 					))}
 				</div>
