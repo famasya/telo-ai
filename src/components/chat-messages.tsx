@@ -16,7 +16,7 @@ import {
 	ReasoningContent,
 	ReasoningTrigger,
 } from "@/components/ai-elements/reasoning";
-import type { MyUIMessage } from "@/routes/api/chat";
+import type { UIMessage } from "@/routes/api/chat";
 import {
 	AiNetworkIcon,
 	Copy01Icon,
@@ -28,7 +28,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import type { ChatRequestOptions, ChatStatus } from "ai";
 
 interface ChatMessagesProps {
-	messages: MyUIMessage[];
+	messages: UIMessage[];
 	status: ChatStatus;
 	regenerate: (options?: ChatRequestOptions) => void;
 }
@@ -45,13 +45,13 @@ function ToolCallDisplay({
 	const getToolIcon = () => {
 		switch (toolName) {
 			case "documentSearch":
-				return <HugeiconsIcon icon={Search01Icon} size={16} />;
+				return <HugeiconsIcon icon={Search01Icon} size={16} strokeWidth={2} />;
 			case "documentContentSearchTool":
-				return <HugeiconsIcon icon={FileSearchIcon} size={16} />;
+				return <HugeiconsIcon icon={FileSearchIcon} size={16} strokeWidth={2} />;
 			case "documentRelationGraph":
-				return <HugeiconsIcon icon={AiNetworkIcon} size={16} />;
+				return <HugeiconsIcon icon={AiNetworkIcon} size={16} strokeWidth={2} />;
 			default:
-				return <HugeiconsIcon icon={Search01Icon} size={16} />;
+				return <HugeiconsIcon icon={Search01Icon} size={16} strokeWidth={2} />;
 		}
 	};
 
@@ -119,12 +119,14 @@ function ToolCallDisplay({
 	};
 
 	return (
-		<div className="my-2 p-3 bg-zinc-50 border border-zinc-200 rounded-lg">
+		<div className="my-2 p-3 bg-violet-50 border border-violet-200 rounded-lg">
 			<div className="flex items-start gap-2">
-				<div className="mt-0.5 text-zinc-600">{getToolIcon()}</div>
+				<div className="mt-0.5 text-violet-600">{getToolIcon()}</div>
 				<div className="flex-1 min-w-0">
 					<div className="font-medium text-sm text-zinc-900">
-						{getToolLabel()}
+						<span className="px-2 bg-violet-100 py-0.5 rounded-full">
+							{getToolLabel()}
+						</span>
 					</div>
 					<div className="text-xs text-zinc-600 mt-1 break-words">
 						{getToolArgs()}
@@ -186,7 +188,7 @@ export function ChatMessages({
 											}
 										>
 											<ReasoningTrigger />
-											<ReasoningContent className="data-[state=closed]:animate-none data-[state=open]:animate-none bg-sky-100 text-sky-900 p-2 rounded-md">
+											<ReasoningContent className="data-[state=closed]:animate-none data-[state=open]:animate-none bg-sky-50 border border-sky-200 text-sky-900 p-2 rounded-md">
 												{part.text}
 											</ReasoningContent>
 										</Reasoning>
