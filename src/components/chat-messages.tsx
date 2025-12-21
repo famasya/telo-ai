@@ -8,7 +8,6 @@ import {
 	MessageAction,
 	MessageActions,
 	MessageContent,
-	MessageResponse,
 } from "@/components/ai-elements/message";
 import {
 	Reasoning,
@@ -16,6 +15,7 @@ import {
 	ReasoningTrigger,
 } from "@/components/ai-elements/reasoning";
 import { DocumentSearchResults } from "@/components/document-search-results";
+import { MarkdownRenderer } from "@/components/markdown-renderer";
 import type { ChatUIMessage } from "@/routes/api/chat";
 import {
 	AiNetworkIcon,
@@ -140,7 +140,7 @@ export function ChatMessages({
 									return (
 										<Message key={`${message.id}-${i}`} from={message.role}>
 											<MessageContent>
-												<MessageResponse>{part.text}</MessageResponse>
+												<MarkdownRenderer>{part.text}</MarkdownRenderer>
 											</MessageContent>
 											{message.role === "assistant" && (
 												<MessageActions>
@@ -198,16 +198,6 @@ export function ChatMessages({
 										<div key={`${message.id}-${i}`} className="px-4 sm:px-6">
 											<ToolCallDisplay
 												toolName="documentContentSearchTool"
-												input={(part.input || {}) as Record<string, unknown>}
-												output={part.output as Record<string, unknown>}
-											/>
-										</div>
-									);
-								case "tool-documentRelationGraph":
-									return (
-										<div key={`${message.id}-${i}`} className="px-4 sm:px-6">
-											<ToolCallDisplay
-												toolName="documentRelationGraph"
 												input={(part.input || {}) as Record<string, unknown>}
 												output={part.output as Record<string, unknown>}
 											/>

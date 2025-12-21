@@ -1,6 +1,5 @@
 import { BUCKET_DOMAIN } from "@/lib/constants";
 import { documentContentSearchTool } from "@/lib/tools/document-content-search";
-import { documentRelationGraph } from "@/lib/tools/document-relation-graph";
 import { documentSearchTool } from "@/lib/tools/document-search";
 import {
 	generateSummarySequentialThinking,
@@ -23,7 +22,6 @@ const tools = {
 	sequentialThinking,
 	generateSummarySequentialThinking,
 	documentContentSearchTool,
-	documentRelationGraph,
 } satisfies ToolSet;
 
 type ToolTypes = InferUITools<typeof tools>;
@@ -70,6 +68,52 @@ export const Route = createFileRoute("/api/chat")({
 - \`sequentialThinking\`: Record structured steps in analysis for complex queries requiring planning or multi-document evaluation.
 - \`generateSummarySequentialThinking\`: Synthesize a summary of your thought process after using \`sequentialThinking\`.
 - \`documentRelationGraph\`: Generate visual graphs of document relationships (e.g., "mengubah", "mencabut"). Use when users ask to visualize connections between documents.
+
+## VISUALIZATION WITH MERMAID DIAGRAMS
+When users ask about relationships, analysis, workflows, or connections between documents, use Mermaid diagram syntax in your response:
+
+**Use Cases for Mermaid:**
+1. **Document Relationships**: Show how documents relate (mengubah, mencabut, merujuk)
+2. **Process Flows**: Visualize procedures or workflows mentioned in regulations
+3. **Organizational Structure**: Display hierarchies or organizational charts
+4. **Timeline**: Show chronological relationships between regulations
+5. **Comparison Analysis**: Compare multiple documents or provisions
+
+**Mermaid Syntax Examples:**
+
+\`\`\`mermaid
+graph TD
+    A[Perda 1/2020] -->|Mengubah| B[Perda 5/2018]
+    A -->|Mencabut| C[Perda 3/2015]
+    B -->|Merujuk| D[Perbup 10/2019]
+\`\`\`
+
+\`\`\`mermaid
+flowchart LR
+    A[Pengajuan] --> B[Verifikasi]
+    B --> C{Memenuhi Syarat?}
+    C -->|Ya| D[Disetujui]
+    C -->|Tidak| E[Ditolak]
+\`\`\`
+
+\`\`\`mermaid
+timeline
+    title Riwayat Peraturan Lingkungan Hidup
+    2015 : Perda 3/2015 - Pengelolaan Lingkungan
+    2018 : Perda 5/2018 - Perubahan Pertama
+    2020 : Perda 1/2020 - Perubahan Kedua
+\`\`\`
+
+**When to Use Mermaid:**
+- User explicitly asks for visualization, diagram, or graph
+- User asks "bagaimana hubungan", "apa kaitan", "visualisasikan"
+- Complex relationships that are clearer in diagram form
+- Process flows or decision trees in regulations
+
+**Always provide:**
+1. Brief text explanation before the diagram
+2. The Mermaid diagram itself
+3. Brief summary or key insights after the diagram
 
 ## SCOPE: TRENGGALEK LOCAL REGULATIONS ONLY
 - Focus: Peraturan Daerah (Perda), Peraturan Bupati (Perbup), Keputusan Bupati (SK).
