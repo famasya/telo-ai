@@ -1,4 +1,4 @@
-import type { MyUIMessage } from "@/routes/api/chat";
+import type { ChatUIMessage } from "@/routes/api/chat";
 import { createServerFn } from "@tanstack/react-start";
 import { env } from "cloudflare:workers";
 import { uuidv7 } from "uuidv7";
@@ -8,7 +8,7 @@ export const saveSession = createServerFn()
 	.inputValidator(
 		z.object({
 			id: z.uuid().optional(),
-			messages: z.array(z.custom<MyUIMessage>()),
+			messages: z.array(z.custom<ChatUIMessage>()),
 		}),
 	)
 	.handler(async ({ data }) => {

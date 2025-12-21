@@ -1,5 +1,6 @@
 /// <reference types="vite/client" />
 import { DefaultCatchBoundary } from "@/components/default-catch-bounday";
+import Header from "@/components/header";
 import { NotFound } from "@/components/not-found";
 import appCss from "@/styles/app.css?url";
 import { seo } from "@/utils/seo";
@@ -25,7 +26,8 @@ export const Route = createRootRouteWithContext<{
 				content: "width=device-width, initial-scale=1",
 			},
 			...seo({
-				title: "(better) tgx-ai",
+				title: "TELO-AI",
+				description: "Asisten pencarian peraturan, SK, dan dokumen hukum daerah Kabupaten Trenggalek",
 			}),
 		],
 		links: [
@@ -51,7 +53,8 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 			<head>
 				<HeadContent />
 			</head>
-			<body className="w-full h-dvh">
+			<body className="w-full h-dvh flex flex-col">
+				<Header />
 				{children}
 				<TanStackRouterDevtools position="bottom-right" />
 				<Scripts />

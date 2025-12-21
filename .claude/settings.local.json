@@ -8,7 +8,9 @@
       "Bash(ls:*)",
       "Bash(bun run build:client:*)",
       "Bash(tsc:*)",
-      "Bash(bunx tsc:*)"
+      "Bash(bunx tsc:*)",
+      "mcp__hugeicons__search_icons",
+      "mcp__hugeicons__get_platform_usage"
     ]
   },
   "enableAllProjectMcpServers": true,

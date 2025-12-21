@@ -7,32 +7,18 @@ import {
 	PromptInputTextarea,
 } from "@/components/ai-elements/prompt-input";
 import { ChatMessages } from "@/components/chat-messages";
-import { DocumentSources } from "@/components/document-sources";
-import type { MyUIMessage } from "@/routes/api/chat";
+import { cn } from "@/lib/utils";
+import type { ChatUIMessage } from "@/routes/api/chat";
 import { useChat } from "@ai-sdk/react";
-import { TextSearch, X } from "lucide-react";
-import { type FormEvent, useEffect, useState } from "react";
-import { Suggestion, Suggestions } from "./ai-elements/suggestion";
+import { Quote } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { type FormEvent, useState } from "react";
 import { Button } from "./ui/button";
 
 export default function Chat() {
 	const [input, setInput] = useState("");
-	const [showSources, setShowSources] = useState(true);
 	const { messages, sendMessage, status, regenerate, stop } =
-		useChat<MyUIMessage>();
-
-	// Show sources by default on desktop
-	useEffect(() => {
-		const handleResize = () => {
-			if (window.innerWidth < 768) {
-				setShowSources(false);
-			}
-		};
-
-		handleResize();
-		window.addEventListener("resize", handleResize);
-		return () => window.removeEventListener("resize", handleResize);
-	}, []);
+		useChat<ChatUIMessage>();
 
 	const handleSubmit = (
 		message: PromptInputMessage,
@@ -51,80 +37,109 @@ export default function Chat() {
 		sendMessage({ text: message.text });
 		setInput("");
 	};
+
 	const [suggestionsCache, _setSuggestionsCache] = useState<string[]>([
-		"Carikan perda apa saja tentang lingkungan hidup",
+		"Carikan peraturan apa saja tentang lingkungan hidup",
 		"Ada berapa hibah kendaraan bermotor?",
 		"Carikan perda tentang pengadaan barang/jasa",
 	]);
 
+	const handleDownloadChat = () => {
+		const markdown = messages
+			.map((msg) => {
+				const role = msg.role === "user" ? "User" : "Assistant";
+				const textParts = msg.parts
+					.filter((part) => part.type === "text")
+					.map((part) => part.text)
+					.join("\n\n");
+				return `## ${role}\n\n${textParts}\n`;
+			})
+			.join("\n---\n\n");
+
+		const fullMarkdown = `# Telo AI Chat Export\n\nExported on: ${new Date().toLocaleString()}\n\n---\n\n${markdown}`;
+
+		const blob = new Blob([fullMarkdown], {
+			type: "text/markdown",
+		});
+		const url = URL.createObjectURL(blob);
+		const a = document.createElement("a");
+		a.href = url;
+		a.download = `telo-ai-chat-${new Date().toISOString().slice(0, 10)}.md`;
+		document.body.appendChild(a);
+		a.click();
+		document.body.removeChild(a);
+		URL.revokeObjectURL(url);
+	};
+
 	return (
-		<div className="w-full h-full flex flex-col md:flex-row relative">
-			{/* Main Chat Area */}
-			<div
-				className={`flex flex-col h-full transition-all duration-300 ${showSources ? "w-full md:w-1/2" : "w-full"}`}
-			>
-				<div className="flex-1 overflow-hidden">
+		<>
+			{/* Messages Area */}
+			<div className="flex-1 w-full overflow-hidden max-w-4xl mx-auto [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar]:w-2">
+				{messages.length > 0 ? (
 					<ChatMessages
 						messages={messages}
 						status={status}
 						regenerate={regenerate}
 					/>
-				</div>
-				<div className="border-t p-2 sm:p-4 flex-shrink-0">
-					<div className="flex items-center justify-between mb-2 gap-4">
-						<Suggestions className="flex-1">
+				) : (
+					<div className="max-w-4xl px-4 mx-auto h-full flex flex-col justify-center">
+						<div className="text-center bg-gradient-to-tl from-sky-800 via-sky-500 to-sky-400 bg-clip-text text-transparent text-3xl font-semibold selection:bg-sky-200 selection:text-sky-900">
+							Telo AI
+						</div>
+						<h3 className="text-sm font-semibold text-zinc-800 mb-3 flex items-center gap-2 mt-2">
+							<span className="w-1 h-4 bg-gradient-to-b from-blue-500 to-blue-600 rounded-full" />
+							SARAN PERTANYAAN
+						</h3>
+						<div className="grid grid-cols-1 md:grid-cols-3 gap-3">
 							{suggestionsCache.map((suggestion, index) => (
-								<Suggestion
-									onClick={() => setInput(suggestion)}
+								<button
 									key={index.toString()}
-									suggestion={suggestion}
-								/>
+									type="button"
+									onClick={() => setInput(suggestion)}
+									className="group relative text-sm bg-gradient-to-br from-blue-50 to-blue-100/50 hover:from-blue-100 hover:to-blue-200/80 text-blue-900 px-4 py-3.5 rounded-xl transition-all duration-200 hover:shadow-xs border border-blue-200/50 hover:border-blue-300 
+							focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-1 whitespace-normal break-words text-left"
+								>
+									<div className="flex items-start justify-between gap-2">
+										<span className="leading-relaxed">{suggestion}</span>
+										<HugeiconsIcon
+											icon={Quote}
+											strokeWidth={2}
+											className="flex-shrink-0 w-4 h-4 text-blue-400 group-hover:text-blue-600 transition-colors"
+										/>
+									</div>
+								</button>
 							))}
-						</Suggestions>
-						<Button
-							size={"sm"}
-							onClick={() => setShowSources(!showSources)}
-							title={showSources ? "Hide Sources" : "Show Sources"}
-						>
-							<TextSearch className="w-4 h-4" />
-						</Button>
+						</div>
 					</div>
-					<PromptInput onSubmit={handleSubmit}>
-						<PromptInputBody>
-							<PromptInputTextarea
-								onChange={(e) => setInput(e.target.value)}
-								value={input}
-							/>
-						</PromptInputBody>
-						<PromptInputFooter className="flex justify-end">
-							<PromptInputSubmit
-								size={"sm"}
-								disabled={!input && !status}
-								status={status}
-							/>
-						</PromptInputFooter>
-					</PromptInput>
-				</div>
+				)}
 			</div>
 
-			{/* Document Sources Panel */}
-			{showSources && (
-				<div className="fixed md:relative inset-0 md:inset-auto w-full md:w-1/2 flex flex-col bg-white md:bg-transparent z-50 md:z-auto">
-					<div className="flex items-center justify-between p-4 border-b md:hidden">
-						<h2 className="font-semibold">Document Sources</h2>
-						<button
-							onClick={() => setShowSources(false)}
-							className="p-2 rounded-lg hover:bg-zinc-100 transition-colors"
-							type="button"
-						>
-							<X className="w-5 h-5" />
-						</button>
-					</div>
-					<div className="flex-1 overflow-hidden border-l">
-						<DocumentSources messages={messages} />
-					</div>
+			{/* Input Area */}
+			<div className="flex-shrink-0 p-2 w-full max-w-4xl mx-auto">
+				<PromptInput onSubmit={handleSubmit}>
+					<PromptInputBody>
+						<PromptInputTextarea
+							className="bg-white"
+							onChange={(e) => setInput(e.target.value)}
+							value={input}
+							placeholder="Ketik pertanyaan disini..."
+						/>
+					</PromptInputBody>
+					<PromptInputFooter className="flex justify-end bg-white">
+						<Button size={"sm"} variant="outline" className={cn("hidden", messages.length > 0 && "block")} disabled={messages.length === 0} onClick={handleDownloadChat}>Download Chat</Button>
+						<PromptInputSubmit
+							className="rounded-full bg-sky-600 hover:bg-sky-700 text-white"
+							size={"sm"}
+							disabled={!input && !status}
+							status={status}
+						/>
+					</PromptInputFooter>
+				</PromptInput>
+				<div className="text-xs my-2 text-center text-zinc-700 rounded-lg p-2">
+					AI mungkin memberikan informasi yang tidak akurat. Selalu cek
+					kebenaran informasi di sumber resmi.
 				</div>
-			)}
-		</div>
+			</div>
+		</>
 	);
 }

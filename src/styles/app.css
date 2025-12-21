@@ -135,9 +135,35 @@
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border outline-ring/50 selection:bg-zinc-200;
   }
   body {
     @apply bg-background text-foreground;
   }
+
+  /* Transparent scrollbar */
+  *::-webkit-scrollbar {
+    @apply w-2;
+    height: 0.5rem;
+  }
+
+  *::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    @apply bg-gray-300 dark:bg-gray-700 rounded-full;
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-400 dark:bg-gray-600;
+  }
+}
+
+.streamdown a {
+  @apply text-blue-500;
+}
+
+main a {
+  @apply text-blue-600 hover:text-blue-800;
 }

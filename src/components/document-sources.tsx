@@ -4,11 +4,13 @@ import {
 	SourcesTrigger,
 } from "@/components/ai-elements/sources";
 import { DocumentRelationGraphRenderer } from "@/components/document-relation-graph-renderer";
-import type { MyUIMessage } from "@/routes/api/chat";
+import { BUCKET_DOMAIN } from "@/lib/constants";
+import type { ChatUIMessage } from "@/routes/api/chat";
+import { Link01Icon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 import { Streamdown } from "@phaserjs/streamdown-lite";
-import { ExternalLink } from "lucide-react";
 interface DocumentSourcesProps {
-	messages: MyUIMessage[];
+	messages: ChatUIMessage[];
 }
 
 export function DocumentSources({ messages }: DocumentSourcesProps) {
@@ -70,10 +72,14 @@ export function DocumentSources({ messages }: DocumentSourcesProps) {
 
 									<div className="border-t border-blue-200 pt-3">
 										<div className="flex flex-row items-center font-medium text-sm mb-3">
-											<ExternalLink className="mr-1 w-4 h-4 shrink-0" />
+											<HugeiconsIcon
+												icon={Link01Icon}
+												className="mr-1 shrink-0"
+												size={16}
+											/>
 											<a
 												className="text-blue-500 hover:text-blue-700"
-												href={`https://tgxai-buckets.abidf.com/${result.filename}`}
+												href={`${BUCKET_DOMAIN}/${result.filename}`}
 												target="_blank"
 											>
 												{result.filename}

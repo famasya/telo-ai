@@ -10,14 +10,15 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
+import {
+  ArrowLeft01Icon,
+  ArrowRight01Icon,
+  Attachment01Icon,
+  Cancel01Icon,
+} from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 import { Streamdown } from "@phaserjs/streamdown-lite";
 import type { FileUIPart, UIMessage } from "ai";
-import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  PaperclipIcon,
-  XIcon,
-} from "lucide-react";
 import type { ComponentProps, HTMLAttributes, ReactElement } from "react";
 import { createContext, memo, useContext, useEffect, useState } from "react";
 
@@ -46,7 +47,7 @@ export const MessageContent = ({
   <div
     className={cn(
       "is-user:dark flex w-fit max-w-full min-w-0 flex-col gap-2 overflow-hidden text-sm",
-      "group-[.is-user]:ml-auto group-[.is-user]:rounded-lg group-[.is-user]:bg-secondary group-[.is-user]:px-4 group-[.is-user]:py-3 group-[.is-user]:text-foreground",
+      "group-[.is-user]:ml-auto group-[.is-user]:rounded-full group-[.is-user]:bg-zinc-100 selection:bg-zinc-200 group-[.is-user]:px-4 group-[.is-user]:py-3 group-[.is-user]:text-foreground",
       "group-[.is-assistant]:text-foreground",
       className
     )}
@@ -252,7 +253,7 @@ export const MessageBranchPrevious = ({
       variant="ghost"
       {...props}
     >
-      {children ?? <ChevronLeftIcon size={14} />}
+      {children ?? <HugeiconsIcon icon={ArrowLeft01Icon} size={14} />}
     </Button>
   );
 };
@@ -276,7 +277,7 @@ export const MessageBranchNext = ({
       variant="ghost"
       {...props}
     >
-      {children ?? <ChevronRightIcon size={14} />}
+      {children ?? <HugeiconsIcon icon={ArrowRight01Icon} size={14} />}
     </Button>
   );
 };
@@ -308,7 +309,7 @@ export const MessageResponse = memo(
   ({ className, ...props }: MessageResponseProps) => (
     <Streamdown
       className={cn(
-        "size-full [&>*:first-child]:mt-0 [&>*:last-child]:mb-0",
+        "size-full streamdown [&>*:first-child]:mt-0 [&>*:last-child]:mb-0",
         className
       )}
       {...props}
@@ -365,7 +366,7 @@ export function MessageAttachment({
               type="button"
               variant="ghost"
             >
-              <XIcon />
+              <HugeiconsIcon icon={Cancel01Icon} size={12} />
               <span className="sr-only">Remove</span>
             </Button>
           )}
@@ -375,7 +376,7 @@ export function MessageAttachment({
           <Tooltip>
             <TooltipTrigger asChild>
               <div className="flex size-full shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
-                <PaperclipIcon className="size-4" />
+                <HugeiconsIcon icon={Attachment01Icon} size={16} />
               </div>
             </TooltipTrigger>
             <TooltipContent>
@@ -393,7 +394,7 @@ export function MessageAttachment({
               type="button"
               variant="ghost"
             >
-              <XIcon />
+              <HugeiconsIcon icon={Cancel01Icon} size={12} />
               <span className="sr-only">Remove</span>
             </Button>
           )}

@@ -6,14 +6,15 @@ import {
 } from "@/components/ui/collapsible";
 import { cn } from "@/lib/utils";
 import type { ToolUIPart } from "ai";
+import { HugeiconsIcon } from "@hugeicons/react";
 import {
-  CheckCircleIcon,
-  ChevronDownIcon,
+  CheckmarkCircle02Icon,
+  ArrowDown01Icon,
   CircleIcon,
-  ClockIcon,
-  WrenchIcon,
-  XCircleIcon,
-} from "lucide-react";
+  Clock01Icon,
+  Wrench01Icon,
+  CancelCircleIcon,
+} from "@hugeicons/core-free-icons";
 import type { ComponentProps, ReactNode } from "react";
 import { isValidElement } from "react";
 import { CodeBlock } from "./code-block";
@@ -46,13 +47,13 @@ const getStatusBadge = (status: ToolUIPart["state"]) => {
   };
 
   const icons: Record<ToolUIPart["state"], ReactNode> = {
-    "input-streaming": <CircleIcon className="size-4" />,
-    "input-available": <ClockIcon className="size-4 animate-pulse" />,
-    "approval-requested": <ClockIcon className="size-4 text-yellow-600" />,
-    "approval-responded": <CheckCircleIcon className="size-4 text-blue-600" />,
-    "output-available": <CheckCircleIcon className="size-4 text-green-600" />,
-    "output-error": <XCircleIcon className="size-4 text-red-600" />,
-    "output-denied": <XCircleIcon className="size-4 text-orange-600" />,
+    "input-streaming": <HugeiconsIcon icon={CircleIcon} size={16} />,
+    "input-available": <HugeiconsIcon icon={Clock01Icon} className="animate-pulse" size={16} />,
+    "approval-requested": <HugeiconsIcon icon={Clock01Icon} className="text-yellow-600" size={16} />,
+    "approval-responded": <HugeiconsIcon icon={CheckmarkCircle02Icon} className="text-blue-600" size={16} />,
+    "output-available": <HugeiconsIcon icon={CheckmarkCircle02Icon} className="text-green-600" size={16} />,
+    "output-error": <HugeiconsIcon icon={CancelCircleIcon} className="text-red-600" size={16} />,
+    "output-denied": <HugeiconsIcon icon={CancelCircleIcon} className="text-orange-600" size={16} />,
   };
 
   return (
@@ -78,13 +79,13 @@ export const ToolHeader = ({
     {...props}
   >
     <div className="flex items-center gap-2">
-      <WrenchIcon className="size-4 text-muted-foreground" />
+      <HugeiconsIcon icon={Wrench01Icon} className="text-muted-foreground" size={16} />
       <span className="font-medium text-sm">
         {title ?? type.split("-").slice(1).join("-")}
       </span>
       {getStatusBadge(state)}
     </div>
-    <ChevronDownIcon className="size-4 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
+    <HugeiconsIcon icon={ArrowDown01Icon} className="text-muted-foreground transition-transform group-data-[state=open]:rotate-180" size={16} />
   </CollapsibleTrigger>
 );
 
