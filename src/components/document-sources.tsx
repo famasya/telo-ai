@@ -5,12 +5,12 @@ import {
 } from "@/components/ai-elements/sources";
 import { DocumentRelationGraphRenderer } from "@/components/document-relation-graph-renderer";
 import { BUCKET_DOMAIN } from "@/lib/constants";
-import type { UIMessage } from "@/routes/api/chat";
+import type { ChatUIMessage } from "@/routes/api/chat";
 import { Link01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Streamdown } from "@phaserjs/streamdown-lite";
 interface DocumentSourcesProps {
-	messages: UIMessage[];
+	messages: ChatUIMessage[];
 }
 
 export function DocumentSources({ messages }: DocumentSourcesProps) {

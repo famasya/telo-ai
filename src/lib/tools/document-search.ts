@@ -6,6 +6,7 @@ import { BUCKET_DOMAIN } from "../constants";
 const documentSearchSchema = z.object({
 	query: z.string().describe("The search query to find relevant documents"),
 });
+
 export const documentSearchTool = tool({
 	description: "Search for relevant documents based on keywords or phrases",
 	inputSchema: documentSearchSchema,

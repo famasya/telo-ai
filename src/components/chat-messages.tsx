@@ -16,6 +16,7 @@ import {
 	ReasoningContent,
 	ReasoningTrigger,
 } from "@/components/ai-elements/reasoning";
+import { DocumentSearchResults } from "@/components/document-search-results";
 import type { ChatUIMessage } from "@/routes/api/chat";
 import {
 	AiNetworkIcon,
@@ -87,37 +88,13 @@ function ToolCallDisplay({
 		return JSON.stringify(input);
 	};
 
-	const renderDocumentTitle = (doc: unknown): string => {
-		const docRecord = doc as Record<string, unknown>;
-		return String(docRecord.title || docRecord.filename || "Unknown");
-	};
-
-	const renderDocuments = () => {
-		const documents = output?.documents;
-		console.log('documents:', documents);
-		if (!documents || !Array.isArray(documents) || documents.length === 0) {
-			return null;
-		}
-
+	const shouldShowDocuments = (): boolean => {
 		return (
-			<div className="mt-2 space-y-1">
-				<div className="text-xs font-medium text-zinc-700">
-					Ditemukan {String(documents.length)} dokumen:
-				</div>
-				{documents.slice(0, 3).map((doc, idx: number) => (
-					<div
-						key={`doc-${String(idx)}`}
-						className="text-xs text-zinc-600 pl-2 border-l-2 border-zinc-300"
-					>
-						{renderDocumentTitle(doc)}
-					</div>
-				))}
-				{documents.length > 3 && (
-					<div className="text-xs text-zinc-500 pl-2">
-						+{String(documents.length - 3)} lainnya
-					</div>
-				)}
-			</div>
+			(toolName === "documentSearch" ||
+				toolName === "documentContentSearchTool") &&
+			!!output?.data &&
+			Array.isArray(output.data) &&
+			output.data.length > 0
 		);
 	};
 
@@ -125,16 +102,22 @@ function ToolCallDisplay({
 		<div className="my-2 p-3 bg-violet-50 border border-violet-200 rounded-lg">
 			<div className="flex items-start gap-2">
 				<div className="mt-0.5 text-violet-600">{getToolIcon()}</div>
-				<div className="flex-1 min-w-0">
-					<div className="font-medium text-sm text-zinc-900">
-						<span className="px-2 bg-violet-100 py-0.5 rounded-full">
-							{getToolLabel()}
-						</span>
+				<div className="flex-1 w-full flex flex-row justify-between">
+					<div className="flex-1">
+						<div className="font-medium text-sm text-zinc-900">
+							<span className="px-2 bg-violet-100 py-0.5 rounded-full">
+								{getToolLabel()}</span>
+						</div>
+						<div className="text-xs text-zinc-600 mt-1 break-words">
+							{getToolArgs()}
+						</div>
 					</div>
-					<div className="text-xs text-zinc-600 mt-1 break-words">
-						{getToolArgs()}
-					</div>
-					{renderDocuments()}
+					{shouldShowDocuments() && output && (
+						<DocumentSearchResults
+							output={output as AutoRagSearchResponse}
+							query={getToolArgs()}
+						/>
+					)}
 				</div>
 			</div>
 		</div>
