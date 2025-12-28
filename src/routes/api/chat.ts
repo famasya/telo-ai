@@ -1,3 +1,4 @@
+import { documentBatchContentSearchTool } from "@/lib/tools/document-batch-content-search";
 import { documentContentSearchTool } from "@/lib/tools/document-content-search";
 import { documentRelationGraph } from "@/lib/tools/document-relation-graph";
 import { documentSearchTool } from "@/lib/tools/document-search";
@@ -22,6 +23,7 @@ const tools = {
 	sequentialThinking,
 	generateSummarySequentialThinking,
 	documentContentSearchTool,
+	documentBatchContentSearchTool,
 	documentRelationGraph,
 } satisfies ToolSet;
 
@@ -177,8 +179,8 @@ timeline
 					stopWhen: (state) => {
 						const stepCount = state.steps.length;
 
-						// Always stop after 6 steps as a safety limit
-						if (stepCount >= 15) return true;
+						// Always stop after 10 steps as a safety limit
+						if (stepCount >= 10) return true;
 
 						// Check if we have at least 3 steps (minimum for a complete flow)
 						if (stepCount < 3) return false;

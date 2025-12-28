@@ -12,7 +12,8 @@
       "mcp__hugeicons__search_icons",
       "mcp__hugeicons__get_platform_usage",
       "Bash(lsof:*)",
-      "Bash(xargs kill -9)"
+      "Bash(xargs kill -9)",
+      "Bash(grep:*)"
     ]
   },
   "enableAllProjectMcpServers": true,
