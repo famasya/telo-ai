@@ -1,4 +1,3 @@
-import { documentBatchContentSearchTool } from "@/lib/tools/document-batch-content-search";
 import { documentContentSearchTool } from "@/lib/tools/document-content-search";
 import { documentRelationGraph } from "@/lib/tools/document-relation-graph";
 import { documentSearchTool } from "@/lib/tools/document-search";
@@ -23,7 +22,6 @@ const tools = {
 	sequentialThinking,
 	generateSummarySequentialThinking,
 	documentContentSearchTool,
-	documentBatchContentSearchTool,
 	documentRelationGraph,
 } satisfies ToolSet;
 
@@ -60,7 +58,7 @@ export const Route = createFileRoute("/api/chat")({
 - **Search FIRST**: For almost all queries, your first action MUST be \`documentSearch\`.
 - **Trust the RAG**: The search tool is semantically aware. You do NOT need to generate multiple sub-queries.
 - **Strategic Thinking**: Use \`sequentialThinking\` *after* initial search to analyze results and plan your deep dive.
-- **Step Limit Awareness**: You have a 6-step limit. After 5 steps, summarize your findings immediately and offer the user a specific next deep-dive option if more investigation is needed. Do not continue searching beyond this point.
+- **Step Limit Awareness**: You have a 4-step limit to prevent timeout. After 3 steps, summarize your findings immediately and offer the user a specific next deep-dive option if more investigation is needed. Do not continue searching beyond this point.
 - **Term Normalization**: Expand abbreviations to full terms for better RAG matching, applied *before* formulating search queries. Prioritized for JDIH/peraturan daerah:
   - perda = peraturan daerah
   - perbup = peraturan bupati
@@ -148,19 +146,19 @@ timeline
    - These will appear in final response even if not examined in detail.
 
 3. **SELECT FOR EXAMINATION (Strategic Prioritization)**
-   - Use \`sequentialThinking\` to identify top 5 most relevant documents.
+   - Use \`sequentialThinking\` to identify top 2-3 most relevant documents.
    - Consider: search score, recency, specificity to query, document type.
    - Prioritize by importance (most relevant first).
-   - If only 3 are highly relevant, select only 3.
+   - **CRITICAL**: Limit to 2 documents max to avoid CPU timeout.
    - Document your selection reasoning for transparency.
 
-4. **BATCH EXAMINE CONTENT (Efficient Deep Dive)**
-   - Use \`documentBatchContentSearchTool\` with:
+4. **EXAMINE CONTENT (Focused Deep Dive)**
+   - Use \`documentContentSearchTool\` for each selected document:
      - \`query\`: Specific question from analysis (e.g., "definisi PPPK", "sanksi pelanggaran").
-     - \`filenames\`: Array of selected filenames (max 5, prioritized).
-   - Example: \`documentBatchContentSearchTool({ query: "kriteria PPPK", filenames: ["perbup-4-2025.pdf", "perbup-31-2024.pdf"] })\`.
-   - Single call retrieves all in parallel.
-   - **Fallback**: For single-document queries, use \`documentContentSearchTool\`.
+     - \`filename\`: Single filename to examine.
+   - Example: \`documentContentSearchTool({ query: "kriteria PPPK", filename: "perbup-4-2025.pdf" })\`.
+   - Examine only 1-2 documents max per query due to step limits.
+   - If user needs more documents, offer to continue in follow-up query.
 
 5. **SYNTHESIZE WITH TRANSPARENCY (Complete Response)**
    - **Show ALL documents** from Step 2 in a table/list format.
@@ -179,11 +177,11 @@ timeline
 					stopWhen: (state) => {
 						const stepCount = state.steps.length;
 
-						// Always stop after 10 steps as a safety limit
-						if (stepCount >= 10) return true;
+						// Always stop after 4 steps to prevent CPU time limit (each step = ~3-5s)
+						if (stepCount >= 4) return true;
 
-						// Check if we have at least 3 steps (minimum for a complete flow)
-						if (stepCount < 3) return false;
+						// Check if we have at least 2 steps (minimum for a complete flow)
+						if (stepCount < 2) return false;
 
 						const lastStep = state.steps.at(-1);
 						if (!lastStep) return false;
