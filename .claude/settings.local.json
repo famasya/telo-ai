@@ -13,11 +13,13 @@
       "mcp__hugeicons__get_platform_usage",
       "Bash(lsof:*)",
       "Bash(xargs kill -9)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "WebSearch"
     ]
   },
   "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
-    "context7"
+    "context7",
+    "hugeicons"
   ]
 }

@@ -55,10 +55,11 @@ export const Route = createFileRoute("/api/chat")({
 - This is a strict requirement for all user-facing content.
 
 ## CRITICAL: OPTIMIZATION & EFFICIENCY
-- **Search FIRST**: For almost all queries, your first action MUST be \`documentSearch\`.
-- **Trust the RAG**: The search tool is semantically aware. You do NOT need to generate multiple sub-queries.
-- **Strategic Thinking**: Use \`sequentialThinking\` *after* initial search to analyze results and plan your deep dive.
-- **Step Limit Awareness**: You have a 4-step limit to prevent timeout. After 3 steps, summarize your findings immediately and offer the user a specific next deep-dive option if more investigation is needed. Do not continue searching beyond this point.
+- **ONE SEARCH ONLY**: Call \`documentSearch\` EXACTLY ONCE per user query. NEVER search multiple times with different variations.
+- **Trust the RAG**: The search tool uses semantic search and will find relevant documents even if your query isn't perfect. DO NOT try to "refine" or "improve" the search.
+- **NO SEARCH ITERATIONS**: If the first search returns results, use them. DO NOT search again with modified queries like adding "perbup", "Trenggalek", or other refinements.
+- **Strategic Thinking**: Use \`sequentialThinking\` *after* the single search to analyze results and plan your deep dive.
+- **Step Limit Awareness**: You have a 4-step limit to prevent timeout. After 3 steps, summarize your findings immediately and offer the user a specific next deep-dive option if more investigation is needed.
 - **Term Normalization**: Expand abbreviations to full terms for better RAG matching, applied *before* formulating search queries. Prioritized for JDIH/peraturan daerah:
   - perda = peraturan daerah
   - perbup = peraturan bupati
@@ -131,14 +132,15 @@ timeline
 
 ## WORKFLOW
 
-1. **SEARCH (Direct & Fast)**
+1. **SEARCH (Direct & Fast - ONE TIME ONLY)**
    - Construct targeted search query from user's intent.
    - **CRITICAL**: Always include document type keywords (peraturan, perbup, perda, keputusan, surat edaran) in your query for better results.
-   - Call \`documentSearch\` immediately.
+   - Call \`documentSearch\` ONCE and proceed to step 2. DO NOT search again.
    - Examples:
      - User: "Carikan peraturan PPPK" -> \`documentSearch("peraturan pegawai pemerintah perjanjian kerja")\`
      - User: "Carikan tentang lingkungan hidup" -> \`documentSearch("peraturan lingkungan hidup")\` (NOT just "lingkungan hidup")
      - User: "Cari aturan tentang pajak" -> \`documentSearch("peraturan pajak")\` (NOT just "pajak")
+   - After search completes, immediately move to step 2 (LIST ALL RESULTS). Never search again.
 
 2. **LIST ALL RESULTS (Complete Inventory)**
    - **CRITICAL**: Note ALL documents returned from search, regardless of relevance.
@@ -171,8 +173,9 @@ timeline
    - If step limit approached: Summarize current findings and offer follow-up option.
 
 ## ERROR HANDLING
-- If search returns nothing, try **one** alternative query with broader terms.
-- If still nothing, inform the user. Do not loop endlessly.`,
+- **CRITICAL**: If search returns ANY results (even 1 document), use them. DO NOT search again.
+- **ONLY** if search returns exactly ZERO results (0 documents), you may try ONE alternative query with broader terms.
+- If second search still returns nothing, inform the user. DO NOT search a third time.`,
 					tools,
 					stopWhen: (state) => {
 						const stepCount = state.steps.length;

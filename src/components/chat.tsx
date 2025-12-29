@@ -12,13 +12,49 @@ import type { ChatUIMessage } from "@/routes/api/chat";
 import { useChat } from "@ai-sdk/react";
 import { Quote } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { type FormEvent, useState } from "react";
+import { type FormEvent, useEffect, useState } from "react";
+import { Alert } from "./ui/alert";
 import { Button } from "./ui/button";
 
 export default function Chat() {
 	const [input, setInput] = useState("");
 	const { messages, sendMessage, status, regenerate, stop } =
 		useChat<ChatUIMessage>();
+	const [lastAutoContinuedIndex, setLastAutoContinuedIndex] = useState(-1);
+
+	// Auto-continue when response stops with only tool calls
+	useEffect(() => {
+		// Only run when status is ready (ready for input) and we have messages
+		if (status === "ready" && messages.length > 0) {
+			const lastMessageIndex = messages.length - 1;
+			const lastMessage = messages[lastMessageIndex];
+
+			// Skip if we already auto-continued for this message
+			if (lastMessageIndex === lastAutoContinuedIndex) {
+				return;
+			}
+
+			// Check if last message is from assistant
+			if (lastMessage.role === "assistant") {
+				// Check if it has tool calls (parts with type starting with "tool-")
+				const hasToolCalls = lastMessage.parts?.some(
+					(part) => part.type.startsWith("tool-"),
+				);
+				// Check if it has minimal or no text
+				const textContent =
+					lastMessage.parts
+						?.filter((part) => part.type === "text")
+						?.map((part) => part.text)
+						?.join("") || "";
+
+				// If has tool calls but no substantial text, auto-continue
+				if (hasToolCalls && textContent.trim().length < 50) {
+					setLastAutoContinuedIndex(lastMessageIndex);
+					sendMessage({ text: "lanjutkan" });
+				}
+			}
+		}
+	}, [status, messages, lastAutoContinuedIndex, sendMessage]);
 
 	const handleSubmit = (
 		message: PromptInputMessage,
@@ -83,9 +119,22 @@ export default function Chat() {
 					/>
 				) : (
 					<div className="max-w-4xl px-4 mx-auto h-full flex flex-col justify-center">
-						<div className="text-center bg-gradient-to-tl from-sky-800 via-sky-500 to-sky-400 bg-clip-text text-transparent text-3xl font-semibold selection:bg-sky-200 selection:text-sky-900">
-							Telo AI
+						<div className="text-center flex items-center gap-2 mb-2">
+							<span className="bg-gradient-to-tl from-sky-800 via-sky-500 to-sky-400 bg-clip-text text-transparent text-3xl font-semibold selection:bg-sky-200 selection:text-sky-900">
+								Telo AI
+							</span>
+							<span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
+								Beta
+							</span>
 						</div>
+						<Alert className="mb-4 text-sm space-y-1 bg-orange-50 border-orange-200">
+							<p>
+								Telo AI masih dalam versi beta. Respons mungkin tidak selalu akurat.
+							</p>
+							<p>
+								Jika response terhenti sebelum selesai, silakan ketik "lanjutkan" di chatbox.
+							</p>
+						</Alert>
 						<h3 className="text-sm font-semibold text-zinc-800 mb-3 flex items-center gap-2 mt-2">
 							<span className="w-1 h-4 bg-gradient-to-b from-blue-500 to-blue-600 rounded-full" />
 							SARAN PERTANYAAN
@@ -96,7 +145,7 @@ export default function Chat() {
 									key={index.toString()}
 									type="button"
 									onClick={() => setInput(suggestion)}
-									className="group relative text-sm bg-gradient-to-br from-blue-50 to-blue-100/50 hover:from-blue-100 hover:to-blue-200/80 text-blue-900 px-4 py-3.5 rounded-xl transition-all duration-200 hover:shadow-xs border border-blue-200/50 hover:border-blue-300 
+									className="group relative text-sm hover:shadow-sm bg-gradient-to-br from-blue-50 to-blue-100/50 hover:from-blue-100 hover:to-blue-200/80 text-blue-900 px-4 py-3.5 rounded-xl transition-all duration-200 hover:shadow-xs border border-blue-200/50 hover:border-blue-300 
 							focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-1 whitespace-normal break-words text-left"
 								>
 									<div className="flex items-start justify-between gap-2">
