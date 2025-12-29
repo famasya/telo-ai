@@ -37,8 +37,8 @@ export default function Chat() {
 			// Check if last message is from assistant
 			if (lastMessage.role === "assistant") {
 				// Check if it has tool calls (parts with type starting with "tool-")
-				const hasToolCalls = lastMessage.parts?.some(
-					(part) => part.type.startsWith("tool-"),
+				const hasToolCalls = lastMessage.parts?.some((part) =>
+					part.type.startsWith("tool-"),
 				);
 				// Check if it has minimal or no text
 				const textContent =
@@ -129,10 +129,12 @@ export default function Chat() {
 						</div>
 						<Alert className="mb-4 text-sm space-y-1 bg-orange-50 border-orange-200">
 							<p>
-								Telo AI masih dalam versi beta. Respons mungkin tidak selalu akurat.
+								Telo AI masih dalam versi beta. Respons mungkin tidak selalu
+								akurat.
 							</p>
 							<p>
-								Jika response terhenti sebelum selesai, silakan ketik "lanjutkan" di chatbox.
+								Jika response terhenti sebelum selesai, silakan ketik
+								"lanjutkan" di chatbox.
 							</p>
 						</Alert>
 						<h3 className="text-sm font-semibold text-zinc-800 mb-3 flex items-center gap-2 mt-2">
