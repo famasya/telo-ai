@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as DocsRouteImport } from './routes/docs'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ShareIdRouteImport } from './routes/share/$id'
 import { Route as ApiSearchRouteImport } from './routes/api/search'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 
@@ -28,6 +29,11 @@ const AboutRoute = AboutRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ShareIdRoute = ShareIdRouteImport.update({
+  id: '/share/$id',
+  path: '/share/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiSearchRoute = ApiSearchRouteImport.update({
@@ -47,6 +53,7 @@ export interface FileRoutesByFullPath {
   '/docs': typeof DocsRoute
   '/api/chat': typeof ApiChatRoute
   '/api/search': typeof ApiSearchRoute
+  '/share/$id': typeof ShareIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -54,6 +61,7 @@ export interface FileRoutesByTo {
   '/docs': typeof DocsRoute
   '/api/chat': typeof ApiChatRoute
   '/api/search': typeof ApiSearchRoute
+  '/share/$id': typeof ShareIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -62,13 +70,27 @@ export interface FileRoutesById {
   '/docs': typeof DocsRoute
   '/api/chat': typeof ApiChatRoute
   '/api/search': typeof ApiSearchRoute
+  '/share/$id': typeof ShareIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/docs' | '/api/chat' | '/api/search'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/docs'
+    | '/api/chat'
+    | '/api/search'
+    | '/share/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/docs' | '/api/chat' | '/api/search'
-  id: '__root__' | '/' | '/about' | '/docs' | '/api/chat' | '/api/search'
+  to: '/' | '/about' | '/docs' | '/api/chat' | '/api/search' | '/share/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/docs'
+    | '/api/chat'
+    | '/api/search'
+    | '/share/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -77,6 +99,7 @@ export interface RootRouteChildren {
   DocsRoute: typeof DocsRoute
   ApiChatRoute: typeof ApiChatRoute
   ApiSearchRoute: typeof ApiSearchRoute
+  ShareIdRoute: typeof ShareIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -102,6 +125,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/share/$id': {
+      id: '/share/$id'
+      path: '/share/$id'
+      fullPath: '/share/$id'
+      preLoaderRoute: typeof ShareIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/search': {
       id: '/api/search'
       path: '/api/search'
@@ -125,6 +155,7 @@ const rootRouteChildren: RootRouteChildren = {
   DocsRoute: DocsRoute,
   ApiChatRoute: ApiChatRoute,
   ApiSearchRoute: ApiSearchRoute,
+  ShareIdRoute: ShareIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

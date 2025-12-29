@@ -30,6 +30,7 @@ import type { ChatRequestOptions, ChatStatus } from "ai";
 interface ChatMessagesProps {
 	messages: ChatUIMessage[];
 	status: ChatStatus;
+	showRegenerate?: boolean;
 	regenerate: (options?: ChatRequestOptions) => void;
 }
 
@@ -130,6 +131,7 @@ export function ChatMessages({
 	messages,
 	status,
 	regenerate,
+	showRegenerate = true,
 }: ChatMessagesProps) {
 	return (
 		<Conversation className="h-full">
@@ -144,7 +146,7 @@ export function ChatMessages({
 											<MessageContent>
 												<MarkdownRenderer>{part.text}</MarkdownRenderer>
 											</MessageContent>
-											{message.role === "assistant" && (
+											{message.role === "assistant" && showRegenerate && (
 												<MessageActions>
 													<MessageAction
 														onClick={() => regenerate()}

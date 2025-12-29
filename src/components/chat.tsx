@@ -7,20 +7,50 @@ import {
 	PromptInputTextarea,
 } from "@/components/ai-elements/prompt-input";
 import { ChatMessages } from "@/components/chat-messages";
+import { shareLink } from "@/lib/share";
 import { cn } from "@/lib/utils";
 import type { ChatUIMessage } from "@/routes/api/chat";
 import { useChat } from "@ai-sdk/react";
-import { Quote } from "@hugeicons/core-free-icons";
+import {
+	CheckmarkCircle02Icon,
+	CopyLinkIcon,
+	Loading03Icon,
+	Quote,
+	Share01Icon,
+} from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import { useMutation } from "@tanstack/react-query";
 import { type FormEvent, useEffect, useState } from "react";
 import { Alert } from "./ui/alert";
 import { Button } from "./ui/button";
 
 export default function Chat() {
 	const [input, setInput] = useState("");
+	const [lastAutoContinuedIndex, setLastAutoContinuedIndex] = useState(-1);
+	const [shareUrl, setShareUrl] = useState<string | null>(null);
+	const [shareId, setShareId] = useState<string | null>(null);
+	const [isCopied, setIsCopied] = useState(false);
+
+	// Mutation for sharing/updating chat
+	const shareMutation = useMutation({
+		mutationFn: async (messagesData: ChatUIMessage[]) => {
+			return await shareLink({
+				data: { messages: messagesData, shareId: shareId || undefined },
+			});
+		},
+		onSuccess: (result) => {
+			const url = `${window.location.origin}/share/${result.key}`;
+			setShareUrl(url);
+			setShareId(result.key);
+		},
+		onError: (error) => {
+			console.error("Share failed:", error);
+			alert("Failed to create share link. Please try again.");
+		},
+	});
+
 	const { messages, sendMessage, status, regenerate, stop } =
 		useChat<ChatUIMessage>();
-	const [lastAutoContinuedIndex, setLastAutoContinuedIndex] = useState(-1);
 
 	// Auto-continue when response stops with only tool calls
 	useEffect(() => {
@@ -56,6 +86,24 @@ export default function Chat() {
 		}
 	}, [status, messages, lastAutoContinuedIndex, sendMessage]);
 
+	// Auto-save when shareId exists and messages change
+	// biome-ignore lint/correctness/useExhaustiveDependencies: shareMutation is stable
+	useEffect(() => {
+		// Only auto-save if:
+		// 1. shareId exists (user has shared before)
+		// 2. There are messages to save
+		// 3. Status is ready (not streaming/submitting)
+		// 4. Not already saving
+		if (
+			shareId &&
+			messages.length > 0 &&
+			status === "ready" &&
+			!shareMutation.isPending
+		) {
+			shareMutation.mutate(messages);
+		}
+	}, [messages, shareId, status]);
+
 	const handleSubmit = (
 		message: PromptInputMessage,
 		event: FormEvent<HTMLFormElement>,
@@ -74,37 +122,26 @@ export default function Chat() {
 		setInput("");
 	};
 
-	const [suggestionsCache, _setSuggestionsCache] = useState<string[]>([
+	const [suggestionsCache] = useState<string[]>([
 		"Carikan peraturan apa saja tentang lingkungan hidup",
 		"Ada berapa hibah kendaraan bermotor?",
 		"Carikan perda tentang pengadaan barang/jasa",
 	]);
 
-	const handleDownloadChat = () => {
-		const markdown = messages
-			.map((msg) => {
-				const role = msg.role === "user" ? "User" : "Assistant";
-				const textParts = msg.parts
-					.filter((part) => part.type === "text")
-					.map((part) => part.text)
-					.join("\n\n");
-				return `## ${role}\n\n${textParts}\n`;
-			})
-			.join("\n---\n\n");
+	const handleShareChat = () => {
+		shareMutation.mutate(messages);
+	};
 
-		const fullMarkdown = `# Telo AI Chat Export\n\nExported on: ${new Date().toLocaleString()}\n\n---\n\n${markdown}`;
-
-		const blob = new Blob([fullMarkdown], {
-			type: "text/markdown",
-		});
-		const url = URL.createObjectURL(blob);
-		const a = document.createElement("a");
-		a.href = url;
-		a.download = `telo-ai-chat-${new Date().toISOString().slice(0, 10)}.md`;
-		document.body.appendChild(a);
-		a.click();
-		document.body.removeChild(a);
-		URL.revokeObjectURL(url);
+	const handleCopyLink = async () => {
+		if (!shareUrl) return;
+		try {
+			await navigator.clipboard.writeText(shareUrl);
+			setIsCopied(true);
+			setTimeout(() => setIsCopied(false), 1000);
+		} catch (error) {
+			console.error("Copy failed:", error);
+			alert(`Failed to copy link: ${shareUrl}`);
+		}
 	};
 
 	return (
@@ -170,22 +207,50 @@ export default function Chat() {
 				<PromptInput onSubmit={handleSubmit}>
 					<PromptInputBody>
 						<PromptInputTextarea
+							autoFocus={true}
 							className="bg-white"
 							onChange={(e) => setInput(e.target.value)}
 							value={input}
 							placeholder="Ketik pertanyaan disini..."
 						/>
 					</PromptInputBody>
-					<PromptInputFooter className="flex justify-end bg-white">
-						<Button
-							size={"sm"}
-							variant="outline"
-							className={cn("hidden", messages.length > 0 && "block")}
-							disabled={messages.length === 0}
-							onClick={handleDownloadChat}
-						>
-							Download Chat
-						</Button>
+					<PromptInputFooter className="flex justify-between bg-white">
+						<div className="flex items-center gap-2">
+							<Button
+								size={"sm"}
+								variant="outline"
+								className={cn(
+									"hidden",
+									messages.length > 0 && "block flex items-center gap-2",
+								)}
+								onClick={handleShareChat}
+								disabled={
+									messages.length === 0 ||
+									shareMutation.isPending ||
+									status !== "ready"
+								}
+							>
+								{!shareMutation.isPending ? (
+									<HugeiconsIcon icon={Share01Icon} size={16} />
+								) : (
+									<HugeiconsIcon
+										icon={Loading03Icon}
+										className="animate-spin"
+										size={16}
+									/>
+								)}
+								<span>Share chat</span>
+							</Button>
+							{shareUrl && (
+								<Button size={"sm"} variant="outline" onClick={handleCopyLink}>
+									<HugeiconsIcon
+										icon={isCopied ? CheckmarkCircle02Icon : CopyLinkIcon}
+										size={16}
+									/>
+									{isCopied ? "Copied!" : "Copy Link"}
+								</Button>
+							)}
+						</div>
 						<PromptInputSubmit
 							className="rounded-full bg-sky-600 hover:bg-sky-700 text-white"
 							size={"sm"}
