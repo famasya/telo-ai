@@ -38,7 +38,7 @@ export function SharedChat({ messages, isLoading, error }: SharedChatProps) {
 	}
 
 	return (
-		<div className="flex flex-col h-[calc(100vh-6rem)] w-full">
+		<div className="flex flex-col w-full">
 			{/* Banner */}
 			<div className="flex-shrink-0">
 				<div className="flex items-center justify-between gap-4 max-w-4xl mx-auto bg-blue-50 p-4 rounded-lg">
@@ -58,13 +58,13 @@ export function SharedChat({ messages, isLoading, error }: SharedChatProps) {
 			</div>
 
 			{/* Messages */}
-			<div className="flex-1 w-full overflow-auto">
+			<div className="w-full">
 				<div className="max-w-4xl mx-auto">
 					<ChatMessages
 						messages={messages}
 						status="ready"
 						showRegenerate={false}
-						regenerate={() => {}}
+						regenerate={() => { }}
 					/>
 				</div>
 			</div>

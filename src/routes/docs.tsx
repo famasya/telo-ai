@@ -54,15 +54,15 @@ function RouteComponent() {
 	const allDocuments = data?.pages.flatMap((page) => page.documents) ?? [];
 
 	return (
-		<main className="flex flex-col h-full max-w-4xl w-full mx-auto">
-			<div className="flex-1 p-4">
+		<main className="flex flex-col max-w-4xl w-full mx-auto">
+			<div className="p-4">
 				<h1 className="text-2xl font-bold">Dokumen Sumber</h1>
 				<p className="text-sm text-gray-600 mt-1">
 					Daftar dokumen yang diunggah ke sistem untuk diproses dan dijadikan
 					konteks. Dokumen akan ditambah secara periodik ke dalam database.
 				</p>
 
-				<div className="mt-4 overflow-y-auto max-h-[calc(100vh-200px)] pr-2">
+				<div className="mt-4">
 					{isLoading ? (
 						<div className="text-center py-4">Loading...</div>
 					) : (

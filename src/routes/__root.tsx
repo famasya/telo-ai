@@ -54,7 +54,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 			<head>
 				<HeadContent />
 			</head>
-			<body className="w-full h-dvh flex flex-col">
+			<body className="w-full min-h-dvh flex flex-col">
 				<Header />
 				{children}
 				<TanStackRouterDevtools position="bottom-right" />
