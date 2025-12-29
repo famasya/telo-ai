@@ -4,7 +4,7 @@ import { env } from "cloudflare:workers";
 import superjson from "superjson";
 import z from "zod";
 
-export const shareLink = createServerFn()
+export const shareLink = createServerFn({ method: "POST" })
 	.inputValidator(
 		z.object({
 			messages: z.array(z.custom<ChatUIMessage>()),
